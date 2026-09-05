@@ -1,7 +1,19 @@
-const links = [
-  { label: "Dashboard", path: "/", testid: "nav-dashboard" },
-  { label: "Study Notes", path: "/notes", testid: "nav-notes" },
-  { label: "Practice Quizzes", path: "/quizzes", testid: "nav-quizzes" },
-  { label: "Tutor", path: "/tutor", testid: "nav-tutor" },
-  { label: "Study Tips", path: "__tips", testid: "nav-tips" },
-];
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+export default function Navbar() {
+  const _links = [
+    { name: "Home", path: "/" },
+    { name: "Tutor", path: "/tutor" }
+  ];
+
+  return (
+    <nav style={{ padding: '15px', background: '#333', color: '#fff', display: 'flex', gap: '20px' }}>
+      <h3>StudyPulse AI</h3>
+      <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+        <Link to="/" style={{ color: '#fff', textDecoration: 'none' }}>Home</Link>
+        <Link to="/tutor" style={{ color: '#fff', textDecoration: 'none' }}>Tutor</Link>
+      </div>
+    </nav>
+  );
+}
