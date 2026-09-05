@@ -13,7 +13,7 @@ export default function Tutor() {
 
   const sendMessage = async () => {
     if (!input.trim()) return;
-    
+
     setLoading(true);
     try {
       const response = await fetch("http://127.0.0.1:8000/api/chat", {
@@ -23,7 +23,7 @@ export default function Tutor() {
         },
         body: JSON.stringify({ message: input }),
       });
-      
+
       const data = await response.json();
       setAiReply(data.reply);
     } catch (_err) {
