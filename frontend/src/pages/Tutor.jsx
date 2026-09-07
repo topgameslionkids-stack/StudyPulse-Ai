@@ -1,59 +1,59 @@
-import React, { useState } from 'react';
+"use client";
 
-export default function Tutor() {
+import { useState } from "react";
+
+export default function TutorPage() {
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [aiReply, setAiReply] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleDeleteChat = () => {
-    if (!globalThis.confirm("Delete this chat?")) return;
-    setInput("");
-    setAiReply("");
-  };
 
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    setLoading(true);
-    try {
-      const response = await fetch("http://127.0.0.1:8000/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ message: input }),
-      });
+    // Add user message
+    const userMessage = { role: "user", text: input };
+    setMessages(prev => [...prev, userMessage]);
 
-      const data = await response.json();
-      setAiReply(data.reply);
-    } catch (_err) {
-      setAiReply("Error connecting to the StudyPulse server.");
-    } finally {
-      setLoading(false);
-    }
+    // Send to backend
+    const response = await fetch("https://YOUR-RENDER-URL/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: input }),
+    });
+
+    const data = await response.json();
+
+    // Add AI message
+    const aiMessage = { role: "assistant", text: data.reply };
+    setMessages(prev => [...prev, aiMessage]);
+
+    setInput("");
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h2>StudyPulse AI Tutor</h2>
-      <div style={{ marginBottom: '10px' }}>
-        <input 
-          type="text" 
-          value={input} 
-          onChange={(e) => setInput(e.target.value)} 
-          placeholder="Ask your AI tutor a question..."
-          style={{ width: '300px', padding: '8px' }}
-        />
-        <button onClick={sendMessage} style={{ marginLeft: '10px', padding: '8px 15px' }}>
-          {loading ? "Thinking..." : "Send"}
-        </button>
-        <button onClick={handleDeleteChat} style={{ marginLeft: '10px', padding: '8px 15px', background: '#ff4d4d', color: '#fff', border: 'none', cursor: 'pointer' }}>
-          Clear
-        </button>
+    <div className="p-10 font-sans">
+      <h1 className="text-3xl font-bold mb-6">Tutor AI</h1>
+
+      <div className="bg-white p-6 rounded-xl shadow mb-6 h-[400px] overflow-y-auto">
+        {messages.map((msg, i) => (
+          <div key={i} className={`mb-4 ${msg.role === "user" ? "text-blue-600" : "text-purple-600"}`}>
+            <strong>{msg.role === "user" ? "You:" : "Tutor:"}</strong> {msg.text}
+          </div>
+        ))}
       </div>
-      <div style={{ marginTop: '20px', background: '#f4f4f4', padding: '15px', borderRadius: '5px' }}>
-        <strong>AI Reply:</strong>
-        <p>{aiReply || "Your answer will appear here..."}</p>
+
+      <div className="flex gap-4">
+        <input
+          className="border p-3 rounded w-full"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Ask your tutor..."
+        />
+        <button
+          onClick={sendMessage}
+          className="bg-indigo-600 text-white px-6 py-3 rounded-lg"
+        >
+          Send
+        </button>
       </div>
     </div>
   );
